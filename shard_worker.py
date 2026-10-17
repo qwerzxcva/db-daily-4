@@ -75,7 +75,8 @@ def write_partition(ds, year, rows):
 def main():
     shard, total = int(sys.argv[1]), int(sys.argv[2])
     syms = json.load(open("symbols.json"))
-    codes = sorted(r["symbol"] for r in syms)
+    if isinstance(syms, dict) and "symbols" in syms: syms = syms["symbols"]
+    codes = sorted((s["symbol"] if isinstance(s, dict) else s) for s in syms)
     codes = codes[shard::total]
     done = set(open(DONE).read().split()) if os.path.exists(DONE) else set()
     todo = [c for c in codes if c not in done][:BATCH]
